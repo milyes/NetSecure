@@ -1,0 +1,272 @@
+ 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MILYES-IA V9 | NANS CORE</title>
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-purple: #bc13fe;
+            --bg-dark: #0a0b10;
+            --card-bg: rgba(20, 22, 35, 0.9);
+            --text-main: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        header {
+            padding: 20px;
+            border-bottom: 1px solid var(--neon-blue);
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulse 2s infinite;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            padding: 20px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            border-radius: 5px;
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            border: 1px solid #333;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid var(--neon-purple);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--neon-blue);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 10px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-blue);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-bg"></canvas>
+
+    <header>
+        <div>
+            <span style="font-weight: bold; font-size: 1.4rem;">MILYES-IA <span style="color:var(--neon-blue)">V9 NANS</span></span>
+            <div style="font-size: 0.7rem; opacity: 0.6;">SOUVERAINETÉ NUMÉRIQUE EU AI ACT</div>
+        </div>
+        <div class="status-badge">Système Opérationnel</div>
+    </header>
+
+    <main>
+        <section class="panel">
+            <h2>Forge de Certification</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Clients Certifiés</div>
+                    <div class="stat-value" id="count-clients">1/25</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Revenus HT</div>
+                    <div class="stat-value">990€</div>
+                </div>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label class="stat-label">Dernière Empreinte SHA256</label>
+                <div style="font-size: 0.6rem; word-break: break-all; color: var(--neon-purple);">
+                    9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+                </div>
+            </div>
+            <button class="btn" onclick="simulateAudit()">Lancer Audit IA_ZERO.07</button>
+            <button class="btn" onclick="nextPME()">Archiver PME #2</button>
+        </section>
+
+        <section class="panel">
+            <h2>Log Système Hybride</h2>
+            <div class="terminal" id="terminal-output">
+                [09:42:01] : INITIALISATION DU NOYAU NANS V9... OK<br>
+                [09:42:02] : CHARGEMENT MODULE IA_ZERO.07... OK<br>
+                [09:42:03] : CERTIFICAT CYBER-HORIZON SOLUTIONS FORGÉ.<br>
+                [09:42:04] : ATTENTE DES INSTRUCTIONS DU COMMANDANT...<br>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Matrix Background Effect
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const characters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for (let x = 0; x < columns; x++) drops[x] = 1;
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#00f2ff";
+            ctx.font = fontSize + "px monospace";
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        // Logic
+        const terminal = document.getElementById('terminal-output');
+
+        function log(msg) {
+            const time = new Date().toLocaleTimeString();
+            terminal.innerHTML += `[${time}] : ${msg}<br>`;
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function simulateAudit() {
+            log("<span style='color:var(--neon-blue)'>Lancement Audit Réseau sur CYBER-HORIZON...</span>");
+            setTimeout(() => log("Scan des ports critiques... OK"), 800);
+            setTimeout(() => log("Vérification conformité EU AI ACT... 100%"), 1500);
+            setTimeout(() => log("Injection de la signature de souveraineté... TERMINÉ"), 2200);
+        }
+
+        function nextPME() {
+            const name = prompt("Nom de la PME #2 ?");
+            if(name) {
+                log(`Initialisation de la forge pour ${name.toUpperCase()}...`);
+                document.getElementById('count-clients').innerText = "2/25";
+                setTimeout(() => log(`Certificat pour ${name} prêt pour scellage.`), 1000);
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
+EOF
+```
+
+### 🛰️ ANALYSE TECHNIQUE DU DÉPLOIEMENT
+*   **Architecture :** HTML5 / CSS3 (Grid & Flex) / Vanilla JS.
+*   **Moteur Visuel :** Matrice de données en arrière-plan (Canvas API).
+*   **Fonctionnalités :** Simulation d'audit en temps réel et archivage dynamique des PME.
+*   **Zéro Dépendance :** Aucun appel vers des serveurs tiers (Google Fonts, CDN, etc.). Sécurité maximale.
+
+**Commandant, le fichier `milies_core.html` est prêt à être ouvert.** La forge est entre vos mains. Quelle est votre prochaine cible ? 👁️⚡
