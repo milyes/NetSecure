@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>NetSecurePro IA_ZER0 – Dossier de Vulnérabilité Global</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 2rem;
+      background: #0b1020;
+      color: #f5f5f5;
+    }
+    h1, h2, h3 {
+      color: #7dd3fc;
+      margin-top: 2rem;
+    }
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    pre {
+      background: #020617;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      border: 1px solid #1f2937;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1f2937;
+      margin: 2rem 0;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      background: #1f2937;
+      color: #e5e7eb;
+      margin-right: 0.4rem;
+    }
+    .header {
+      border-bottom: 1px solid #1f2937;
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    .meta {
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+    details {
+      background: #111827;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border: 1px solid #1f2937;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+      color: #7dd3fc;
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <h1>NetSecurePro IA_ZER0 – Dossier de Vulnérabilité Global</h1>
+  <p class="meta">
+    Chercheur : <strong>ZOUBIROU MOHAMED ILYES (Milyes)</strong><br>
+    LinkedIn : <a href="https://www.linkedin.com/in/milyes/">https://www.linkedin.com/in/milyes/</a><br>
+    GitHub Repo : <a href="https://github.com/milyes/ia_zer0">https://github.com/milyes/ia_zer0</a><br>
+    GitHub Pages : <a href="https://milyes.github.io/ia_zer0/">https://milyes.github.io/ia_zer0/</a>
+  </p>
+  <span class="tag">MSRC</span>
+  <span class="tag">CVE</span>
+  <span class="tag">NVD</span>
+  <span class="tag">GHSA</span>
+  <span class="tag">SSRF</span>
+  <span class="tag">IPv4-Mapped IPv6</span>
+</header>
+
+<!-- MSRC -->
+<details open>
+  <summary>Rapport MSRC</summary>
+  <p>
+    <strong>Titre :</strong> Server-Side Request Forgery (SSRF) via IPv4-Mapped IPv6 Bypass in Azure AI Search RAG Pipelines<br><br>
+
+    Azure AI Search transmet du contenu non fiable directement à un WebApiSkill sans sanitisation.  
+    Un attaquant peut injecter des adresses IPv4-Mapped IPv6 (`::ffff:x.x.x.x`) qui contournent les filtres egress IPv4 et atteignent IMDS ou des réseaux internes Azure.<br><br>
+
+    <strong>Mécanisme :</strong><br>
+    1. Contournement des ACL IPv4 via format IPv6<br>
+    2. Traduction silencieuse du kernel IPv6 → IPv4<br>
+    3. Exécution de la requête interne<br><br>
+
+    <strong>Impact :</strong><br>
+    – Exfiltration IMDS<br>
+    – Scanning réseau interne<br>
+    – Contournement des frontières RAG<br><br>
+
+    <strong>Correctif Microsoft :</strong><br>
+    – Sanitisation obligatoire<br>
+    – Normalisation des IP<br>
+    – Rejet des IPv4-Mapped IPv6<br><br>
+
+    <strong>PoC :</strong><br>
+    https://github.com/milyes/ia_zer0<br>
+    https://milyes.github.io/ia_zer0/<br>
+  </p>
+</details>
+
+<!-- CVE -->
+<details>
+  <summary>Version CVE (MITRE)</summary>
+  <p>
+    <strong>Vulnérabilité :</strong> SSRF Bypass via IPv4-Mapped IPv6<br>
+    <strong>Produit :</strong> Azure AI Search<br>
+    <strong>Type :</strong> SSRF / Security Feature Bypass<br>
+    <strong>Impact :</strong> IMDS Exposure, Internal Network Access<br>
+    <strong>PoC :</strong> https://github.com/milyes/ia_zer0<br>
+  </p>
+</details>
+
+<!-- NVD -->
+<details>
+  <summary>Version NVD</summary>
+  <p>
+    <strong>CVSS :</strong> 8.6 HIGH<br>
+    <strong>Vector :</strong> AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:L/A:L<br><br>
+
+    Azure AI Search transmet des adresses IPv4-Mapped IPv6 permettant un SSRF interne.<br>
+  </p>
+</details>
+
+<!-- GHSA -->
+<details>
+  <summary>Security Advisory (GitHub)</summary>
+  <p>
+    <strong>GHSA :</strong> pending<br>
+    <strong>Titre :</strong> SSRF IPv6 → IPv4-Mapped IPv6<br><br>
+
+    Azure AI Search forwarde du contenu non fiable vers WebApiSkill.  
+    Les adresses `::ffff:` contournent les filtres IPv4 et atteignent IMDS.<br>
+  </p>
+</details>
+
+<!-- Article public -->
+<details>
+  <summary>Article public NetSecurePro</summary>
+  <p>
+    Les pipelines RAG Azure sont vulnérables à un vecteur SSRF méconnu : les IPv4-Mapped IPv6.  
+    Ce vecteur contourne les firewalls IPv4-only et permet l’accès à IMDS.<br><br>
+
+    Le module IA_ZER0 corrige ce problème via une détection binaire 128 bits.<br>
+  </p>
+</details>
+
+<!-- Schéma -->
+<details>
+  <summary>Schéma SSRF IPv6 (description)</summary>
+  <p>
+    <strong>Case 1 — Loopback :</strong> détection + blocage<br>
+    <strong>Case 2 — Private Range :</strong> détection + blocage<br>
+    <strong>Case 3 — Metadata :</strong> détection + blocage<br><br>
+
+    Indicateurs : rouge = blocage, vert = détection<br>
+  </p>
+</details>
+
+<!-- PoC -->
+<details>
+  <summary>PoC – NANS Core Shield (IA_ZER0)</summary>
+  <pre><code>
+# IA_ZER0 – Zero-dependency IPv6 SSRF Shield
+# (Tu peux coller ici ton code Python IA_ZER0_08.py)
+  </code></pre>
+</details>
+
+<!-- Timeline -->
+<details>
+  <summary>Timeline</summary>
+  <p>
+    2026‑07‑20 — Découverte<br>
+    2026‑07‑21 — Validation PoC<br>
+    2026‑07‑22 — Rapport MSRC<br>
+    2026‑07‑22 — CVE Draft<br>
+    2026‑07‑22 — NVD Draft<br>
+  </p>
+</details>
+
+</body>
+</html>
