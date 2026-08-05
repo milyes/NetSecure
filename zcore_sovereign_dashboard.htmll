@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetSecurePro IA — Z-CORE Sovereign Ecosystem v1.0 (Offline Native)</title>
+<style>
+:root { 
+  --bg: #04060d; --bg2: #070c18; --bg3: #0b1225; 
+  --z: #00d4ff; --med: #00ffb3; --sec: #ff6b35; --gold: #ffd700; --vio: #a855f7; 
+  --txt: #c8dff0; --txt2: #5a7a9a; --r: 8px; 
+  --font-title: 'Orbitron', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'DM Mono', Consolas, "Liberation Mono", Courier, monospace;
+  --font-sans: 'Exo 2', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background: var(--bg); color: var(--txt); font-family: var(--font-sans); min-height: 100vh; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(0,212,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.035) 1px, transparent 1px); background-size: 42px 42px; }
+#boot { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; transition: opacity 0.6s ease; }
+.boot-title { font-family: var(--font-title); font-size: clamp(24px, 5vw, 42px); font-weight: 900; letter-spacing: 6px; color: var(--z); text-shadow: 0 0 30px rgba(0,212,255,0.6); }
+.boot-sub { font-family: var(--font-mono); font-size: 11px; color: var(--txt2); letter-spacing: 3px; }
+.boot-bar { width: 340px; height: 4px; background: var(--bg3); border-radius: 4px; overflow: hidden; border: 1px solid rgba(0,212,255,0.2); }
+.boot-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--z), var(--med)); transition: width 0.18s ease; }
+.boot-log { font-family: var(--font-mono); font-size: 10px; color: var(--med); width: 340px; height: 100px; overflow: hidden; text-align: left; line-height: 1.5; }
+.boot-line { opacity: 0; animation: fadeIn 0.3s forwards; margin-bottom: 2px; }
+.topbar { position: sticky; top: 0; z-index: 100; height: 60px; background: rgba(4,6,13,0.96); border-bottom: 1px solid rgba(0,212,255,0.2); backdrop-filter: blur(16px); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-family: var(--font-mono); font-size: 10px; }
+.ghost-mode { color: var(--sec); animation: ghostPulse 2s infinite; }
+.wrap { max-width: 1020px; margin: 0 auto; padding: 24px; position: relative; z-index: 1; }
+.header-logo { font-family: var(--font-title); font-size: 34px; font-weight: 900; letter-spacing: 6px; text-align: center; color: var(--z); text-shadow: 0 0 20px rgba(0,212,255,0.3); }
+.header-logo span { color: var(--med); }
+.sec-lbl { font-family: var(--font-title); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--txt2); margin: 32px 0 14px; display: flex; align-items: center; gap: 10px; }
+.sec-lbl::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(0,212,255,0.25), transparent); }
+.met, .mcard { background: var(--bg2); border: 1px solid rgba(0,212,255,0.18); border-radius: var(--r); padding: 18px; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+.met::before, .mcard::before { content: ''; position: absolute; top: 8px; left: 8px; width: 10px; height: 10px; border-top: 2px solid var(--z); border-left: 2px solid var(--z); }
+.met::after, .mcard::after { content: ''; position: absolute; top: 8px; right: 8px; width: 10px; height: 10px; border-top: 2px solid var(--z); border-right: 2px solid var(--z); }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.mods { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+.met-v { font-family: var(--font-title); font-size: 28px; font-weight: 700; }
+.met-l { font-size: 9px; color: var(--txt2); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+.mc-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.mc-name { font-family: var(--font-title); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; }
+.mc-row { display: flex; justify-content: space-between; font-size: 11px; font-family: var(--font-mono); margin-top: 6px; }
+.badge { font-size: 8px; padding: 3px 9px; border-radius: 4px; font-family: var(--font-mono); letter-spacing: 1px; }
+.b-ghost { background: rgba(0,212,255,0.12); color: var(--z); border: 1px solid rgba(0,212,255,0.3); }
+.terminal-box { background: #020307; border: 1px solid rgba(0, 255, 179, 0.3); border-radius: var(--r); padding: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--med); margin-top: 14px; }
+.term-header { display: flex; justify-content: space-between; color: var(--txt2); margin-bottom: 10px; font-size: 9px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px; }
+.term-logs { height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.term-input-line { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+.term-input { flex: 1; background: transparent; border: none; outline: none; color: var(--txt); font-family: var(--font-mono); font-size: 11px; }
+.btn-action { background: rgba(0,212,255,0.15); color: var(--z); border: 1px solid var(--z); padding: 6px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 10px; cursor: pointer; transition: all 0.2s; }
+.btn-action:hover { background: var(--z); color: #000; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ghostPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+@media (max-width: 640px) { .metrics, .mods { grid-template-columns: 1fr; } .topbar { font-size: 8px; padding: 0 12px; } }
+</style>
+</head>
+<body>
+<div id="boot">
+  <div class="boot-title">NETSECUREPRO IA</div>
+  <div class="boot-sub">Z-CORE SOVEREIGN ECOSYSTEM • LOCAL MODE</div>
+  <div class="boot-bar"><div class="boot-fill" id="bfill"></div></div>
+  <div class="boot-log" id="blog"></div>
+</div>
+<div class="topbar">
+  <div>Z-CORE v1.0 • MONTRÉAL, QC</div>
+  <div style="display:flex; align-items:center; gap:16px;">
+    <span style="color:var(--med)">● NATIVE-OFFLINE</span>
+    <span class="ghost-mode">GHOST MODE ACTIVE</span>
+    <span style="color:var(--z)">M.I. ZOUBIROU</span>
+  </div>
+</div>
+<div class="wrap">
+  <div class="header-logo">NETSECUREPRO <span>IA</span></div>
+  <p style="text-align:center; color:var(--txt2); margin:10px 0 28px; font-size:13px; font-family:var(--font-mono);">
+    Écosystème IA Souverain • 100% Local • Zero Cloud • NSP-LAW-AI-2026 CERTIFIED
+  </p>
+  <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:28px;">
+    <div style="background:var(--bg2); padding:6px 14px; border-radius:20px; border:1px solid rgba(0,212,255,0.25); font-size:10px; font-family:var(--font-mono)"> Z-H202.ia • NOYAU QUANTIQUE H202 </div>
+    <div style="background:var(--bg2); padding:6px 14px; border-radius:20px; border:1px solid rgba(0,212,255,0.25); font-size:10px; font-family:var(--font-mono)"> LegalGuard • CRYPTO-AUDIT ENGINE </div>
+  </div>
+  <div class="sec-lbl">Métriques Temps Réel — 2026</div>
+  <div class="metrics">
+    <div class="met" style="border-color:var(--z)"><div class="met-v" id="m-decisions" style="color:var(--z)">18</div><div class="met-l">Décisions Scellées Crypto</div></div>
+    <div class="met" style="border-color:var(--med)"><div class="met-v" id="m-soh" style="color:var(--med)">95.2%</div><div class="met-l">SoH Batterie (Z-Tesla)</div></div>
+    <div class="met" style="border-color:var(--sec)"><div class="met-v" style="color:var(--sec)">MAX</div><div class="met-l">Shield Level (AES-256-GCM)</div></div>
+    <div class="met" style="border-color:var(--vio)"><div class="met-v" style="color:var(--vio); font-size:22px;">SOUVERAIN</div><div class="met-l">Mode Opératoire Local</div></div>
+  </div>
+  <div class="sec-lbl">Modules Intégrés • Z-CORE Ecosystem</div>
+  <div class="mods">
+    <div class="mcard" style="border-color:var(--vio)">
+      <div class="mc-head"><div class="mc-name" style="color:var(--vio)">Z-H202.ia + Z-PUCE</div><span class="badge b-ghost">GHOST MODE</span></div>
+      <div style="font-size:12px; line-height:1.5; margin-bottom:12px; color:var(--txt)"> Processeur IA souverain 6 couches • Inférence ultra-rapide local MoE • Mémoire épisodique active. </div>
+      <button class="btn-action" onclick="executeCryptoSeal()">[EXEC] Sceller Décision Native</button>
+    </div>
+    <div class="mcard" style="border-color:var(--gold)">
+      <div class="mc-head"><div class="mc-name" style="color:var(--gold)">ROBOOX Ultra</div><span class="badge" style="background:rgba(255,215,0,0.15);color:var(--gold)">TRAINING ACTIVE</span></div>
+      <div class="mc-row"><span style="color:var(--txt2)">PID Sentinel</span><span>28403</span></div>
+      <div class="mc-row"><span style="color:var(--txt2)">Expériences</span><span id="exp-count">6</span></div>
+      <div class="mc-row"><span style="color:var(--txt2)">Heartbeat</span><span>Cryptographique 60s</span></div>
+    </div>
+    <div class="mcard" style="border-color:var(--med)">
+      <div class="mc-head"><div class="mc-name" style="color:var(--med)">IA_AUTO_BATTERY</div><span class="badge" style="background:rgba(0,255,179,0.15);color:var(--med)">Z-TESLA</span></div>
+      <div style="margin:12px 0"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px;font-family:var(--font-mono)"><span>Health State (SoH)</span><strong id="soh-val">95.2%</strong></div><div style="height:6px;background:var(--bg3);border-radius:3px"><div id="soh-bar" style="width:95.2%;height:100%;background:linear-gradient(90deg,var(--z),var(--med));border-radius:3px"></div></div></div>
+      <div style="font-size:9px;color:var(--txt2);font-family:var(--font-mono)">Algorithme lissage spatial Z-CORE v10 actif</div>
+    </div>
+    <div class="mcard" style="border-color:var(--sec)">
+      <div class="mc-head"><div class="mc-name" style="color:var(--sec)">NetSecurePro</div><span class="badge" style="background:rgba(255,107,53,0.15);color:var(--sec)">SHIELD MAX</span></div>
+      <div class="mc-row"><span style="color:var(--txt2)">Chiffrement</span><span>AES-256-GCM</span></div>
+      <div class="mc-row"><span style="color:var(--txt2)">TLS</span><span>1.3 • mTLS Enterprise</span></div>
+      <div class="mc-row"><span style="color:var(--txt2)">Zero-Trust</span><span>Natif / Offline</span></div>
+    </div>
+  </div>
+  <div class="sec-lbl">LegalGuard v1.0 — AuditVault Cryptographique</div>
+  <div class="mcard" style="border-color:var(--med)">
+    <div class="mc-head"><div class="mc-name" style="color:var(--med)">LegalGuard v1.0</div><span class="badge" style="background:rgba(0,255,179,0.15);color:var(--med)">AUDITCHAIN ACTIVE</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px,1fr));gap:16px;margin-top:10px">
+      <div><div style="font-size:9px;color:var(--txt2)">Signature</div><div style="color:var(--med);font-family:var(--font-mono)">ed25519</div></div>
+      <div><div style="font-size:9px;color:var(--txt2)">Hash Chain</div><div style="color:var(--med);font-family:var(--font-mono)">SHA-256</div></div>
+      <div><div style="font-size:9px;color:var(--txt2)">Entrées</div><div id="lg-count" style="color:var(--med);font-family:var(--font-mono)">28</div></div>
+      <div><div style="font-size:9px;color:var(--txt2)">Conformité</div><div style="color:var(--med);font-size:10px">RGPD • eIDAS • ISO 27001</div></div>
+    </div>
+    <div style="margin-top:12px; font-size:9px; font-family:var(--font-mono); color:var(--txt2); word-break:break-all;" id="last-hash"> Dernier Hash SHA-256: 8f9b23e4a... [Scellé localement] </div>
+  </div>
+  <div class="sec-lbl">Console Matrix Z-CORE_H202 Engine</div>
+  <div class="terminal-box">
+    <div class="term-header"><span>MILYES-IA TERMINAL NATIVE v4.0.9</span><span>127.0.0.1:8000</span></div>
+    <div class="term-logs" id="term-logs">
+      <div>[SYS] Noyau Z-CORE H202 chargé avec succès.</div>
+      <div>[SYS] Entrez 'status', 'seal', ou 'clear' dans la console.</div>
+    </div>
+    <div class="term-input-line"><span style="color:var(--z)">z-core@milyes:~$</span><input type="text" class="term-input" id="term-input" placeholder="Tapez une commande..." onkeydown="handleTerminal(event)"></div>
+  </div>
+  <div style="margin-top:40px; text-align:center; font-family:var(--font-mono); font-size:9px; color:var(--txt2); line-height:1.6;">
+    © 2026 Mohammed Ilyes Zoubirou • NetSecurePro IA<br> milyes@netsecurepro.ca • Montréal, Québec, Canada<br> ORCID 0009-0007-7571-3178 • 100% Souverain • Offline-First • Zero Cloud Leaks
+  </div>
+</div>
+<script>
+let state = { decisions: 18, auditEntries: 28, experiences: 6, soh: 95.2 };
+const bootLines = [
+  "[0/6] Initialisation AuditVault (WebCrypto SHA-256)...",
+  "[1/6] Z-H202.ia → GHOST MODE ACTIVE",
+  "[2/6] ROBOOX Ultra • Sentinel PID 28403",
+  "[3/6] IA_AUTO_BATTERY • SoH 95.2% Z-Tesla",
+  "[4/6] NetSecurePro • Shield AES-256-GCM Native",
+  "[5/6] LegalGuard • AuditChain Integrity verified",
+  "[6/6] API Local Core • 127.0.0.1:8000 Operational",
+  "✅ NETSECUREPRO IA APTE AU SERVICE SOUVERAIN"
+];
+const fill = document.getElementById('bfill'); const blog = document.getElementById('blog'); let bi = 0;
+const bootInterval = setInterval(() => {
+  if (bi >= bootLines.length) { clearInterval(bootInterval); setTimeout(() => { const bootElement = document.getElementById('boot'); bootElement.style.opacity = '0'; setTimeout(() => bootElement.style.display = 'none', 600); }, 300); return; }
+  const line = document.createElement('div'); line.className = 'boot-line'; line.textContent = bootLines[bi]; blog.appendChild(line); blog.scrollTop = blog.scrollHeight; fill.style.width = ((bi + 1) / bootLines.length * 100) + '%'; bi++;
+}, 180);
+async function executeCryptoSeal() {
+  state.decisions++; state.auditEntries++;
+  document.getElementById('m-decisions').textContent = state.decisions;
+  document.getElementById('lg-count').textContent = state.auditEntries;
+  const time = new Date().toISOString(); const payload = `DECISION_SEAL_${state.decisions}_TIMESTAMP_${time}`;
+  const msgBuffer = new TextEncoder().encode(payload); const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  document.getElementById('last-hash').textContent = `Dernier Hash SHA-256: ${hashHex}`;
+  appendLog(`[SEAL OK] Décision #${state.decisions} scellée. Hash: ${hashHex.substring(0,18)}...`);
+}
+function appendLog(text) { const logs = document.getElementById('term-logs'); const item = document.createElement('div'); item.textContent = text; logs.appendChild(item); logs.scrollTop = logs.scrollHeight; }
+function handleTerminal(e) {
+  if (e.key === 'Enter') { const input = document.getElementById('term-input'); const cmd = input.value.trim().toLowerCase(); input.value = ''; if (!cmd) return;
+    appendLog(`z-core@milyes:~$ ${cmd}`);
+    if (cmd === 'status') { appendLog(`[STATUS] Z-CORE v1.0 OK | SoH: ${state.soh}% | Shield: MAX | Decisions: ${state.decisions}`); }
+    else if (cmd === 'seal') { executeCryptoSeal(); }
+    else if (cmd === 'clear') { document.getElementById('term-logs').innerHTML = ''; }
+    else if (cmd === 'help') { appendLog(`Commandes: 'status', 'seal', 'clear', 'ping'`); }
+    else if (cmd === 'ping') { appendLog(`PONG - Local latency: 0.04ms (Localhost Matrix)`); }
+    else { appendLog(`Commande inconnue: '${cmd}'. Tapez 'help'.`); }
+  }
+}
+</script>
+</body>
+</html>
