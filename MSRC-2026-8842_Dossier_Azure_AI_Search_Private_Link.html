@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MSRC-2026-8842 — Dossier Azure AI Search / Private Link</title>
+  <style>
+    :root {
+      --navy: #0b1f3a;
+      --teal: #0e4d5c;
+      --accent: #1a6b7a;
+      --gray: #4a5568;
+      --line: #d0d7de;
+      --bg: #f6f8fa;
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #222;
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    header {
+      background: var(--navy);
+      color: #fff;
+      padding: 2rem 1.5rem 1.5rem;
+    }
+    header .kicker {
+      letter-spacing: .08em;
+      font-size: .75rem;
+      text-transform: uppercase;
+      opacity: .8;
+    }
+    header h1 { margin: .4rem 0 .3rem; font-size: 1.65rem; font-weight: 650; }
+    header p { margin: 0; color: #c5d0db; }
+    nav {
+      background: #10263f;
+      padding: .75rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem 1rem;
+    }
+    nav a { color: #d7e3ee; text-decoration: none; font-size: .88rem; }
+    nav a:hover { text-decoration: underline; }
+    main { max-width: 980px; margin: 0 auto; padding: 1.5rem; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 1.25rem 1.4rem 1.4rem;
+      margin-bottom: 1.1rem;
+    }
+    h2 {
+      color: var(--navy);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: .35rem;
+      font-size: 1.25rem;
+    }
+    h3 { color: var(--teal); font-size: 1.05rem; margin-top: 1.2rem; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; margin: .6rem 0 1rem; }
+    th, td { border: 1px solid var(--line); padding: .45rem .55rem; text-align: left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; }
+    tr:nth-child(even) td { background: #f4f7f8; }
+    pre {
+      background: #0f1720;
+      color: #e8eef3;
+      padding: .9rem 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: .82rem;
+      line-height: 1.45;
+    }
+    .meta { width: 100%; }
+    .meta th { width: 28%; background: #eef3f5; color: var(--navy); }
+    ul { margin-top: .35rem; }
+    footer {
+      max-width: 980px;
+      margin: 0 auto 2rem;
+      padding: 0 1.5rem;
+      color: var(--gray);
+      font-size: .85rem;
+    }
+    .badge {
+      display: inline-block;
+      background: #123;
+      color: #fff;
+      padding: .15rem .5rem;
+      border-radius: 4px;
+      font-size: .78rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="kicker">NetSecurePro IA · Archivage</div>
+    <h1>Dossier MSRC-2026-8842</h1>
+    <p>Azure AI Search — Custom WebApiSkill, Private Link et défense en profondeur</p>
+  </header>
+  <nav>
+    <a href="#s1">1. Courriel MSRC</a>
+    <a href="#s2">2. Rapport technique</a>
+    <a href="#s3">3. Private Link</a>
+    <a href="#s4">4. Architecture</a>
+    <a href="#s5">5. Checklist</a>
+    <a href="#s6">6. LinkedIn</a>
+    <a href="#s7">7. DNS CNAME</a>
+    <a href="#s8">8. Zones DNS privées</a>
+    <a href="#s9">9. Conduite publique</a>
+  </nav>
+  <main>
+    <section>
+      <table class="meta">
+        <tr><th>Référence</th><td>MSRC-2026-8842</td></tr>
+        <tr><th>Produit</th><td>Azure AI Search — Indexer + Custom WebApiSkill</td></tr>
+        <tr><th>Classification</th><td><span class="badge">By design</span></td></tr>
+        <tr><th>Retour MSRC</th><td>5 août 2026</td></tr>
+        <tr><th>Auteur</th><td>Mohammed Ilyes Zoubirou — Fondateur, NetSecurePro IA</td></tr>
+        <tr><th>Contact</th><td>milyes@netsecurepro.ca</td></tr>
+        <tr><th>Certifications</th><td>AZ-104 (12/07/2024) · SC-400 (08/12/2024)</td></tr>
+      </table>
+    </section>
+
+    <section id="s1">
+      <h2>1. Courriel de réponse au MSRC</h2>
+      <p>Bonjour l’équipe MSRC,</p>
+      <p>Je vous confirme la bonne réception de votre courriel du 5 août 2026 concernant le cas <strong>MSRC-2026-8842</strong>.</p>
+      <p>Référence : Cas MSRC-2026-8842 | Azure AI Search</p>
+      <p>Je vous remercie pour votre analyse et votre retour. Suite à votre message, je vous transmets un rapport technique complémentaire destiné à l’archivage.</p>
+      <p>Je prends acte de la classification « by design ». Ma soumission avait pour objectif de contribuer au renforcement de la posture de défense en profondeur pour les clients d’Azure AI Search. Je suis satisfait de constater que la documentation a été mise à jour en conséquence.</p>
+      <p>Je procéderai à une publication LinkedIn afin de partager mon expérience de divulgation responsable auprès de Microsoft et de promouvoir les bonnes pratiques Azure. Je m’assurerai de respecter strictement la classification « by design » et de ne diffuser que des informations déjà publiques.</p>
+      <p>Je reste à votre disposition pour toute précision complémentaire. Je vous remercie encore pour votre réactivité.</p>
+      <p>Cordialement,<br><strong>Mohammed Ilyes Zoubirou</strong><br>Fondateur, NetSecurePro IA<br>milyes@netsecurepro.ca</p>
+    </section>
+
+    <section id="s2">
+      <h2>2. Rapport technique complémentaire</h2>
+      <h3>2.1 Contexte</h3>
+      <ul>
+        <li>Produit : Azure AI Search — Indexer avec Custom WebApiSkill.</li>
+        <li>Architecture : pipeline RAG.</li>
+        <li>Vecteur analysé : requête sortante du Skill vers un endpoint contrôlé par un attaquant.</li>
+      </ul>
+      <h3>2.2 Scénario de test</h3>
+      <ul>
+        <li>Objectif : démontrer l’accès à l’IMDS (169.254.169.254) via l’adresse IPv4-mapped IPv6 ::ffff:169.254.169.254.</li>
+        <li>Prérequis : compromission préalable des identifiants du Skill.</li>
+        <li>Impact : exfiltration possible d’un jeton d’identité managée en cas de RBAC insuffisant.</li>
+      </ul>
+      <h3>2.3 Recommandations</h3>
+      <ul>
+        <li>Bloquer les IP de métadonnées au niveau du VNet / sous-réseau du Skill Host.</li>
+        <li>Avertissement documentation WebApiSkill (SSRF + IMDS).</li>
+        <li>Allowlist des URL d’entrée.</li>
+        <li>Private Endpoint inbound, Shared Private Links outbound, executionEnvironment Private.</li>
+      </ul>
+      <h3>2.4 Conclusion d’archivage</h3>
+      <p>La classification « by design » n’exonère pas d’une défense en profondeur : désactiver l’accès public, exposer Search via Private Endpoint, emprunter des Shared Private Links (executionEnvironment: Private), isoler le Skill Host et interdire 169.254.169.254 ainsi que ::ffff:169.254.169.254. Ces mesures complètent l’allowlist d’URL et le moindre privilège de l’identité managée.</p>
+    </section>
+
+    <section id="s3">
+      <h2>3. Azure Private Link — synthèse</h2>
+      <p>Private Link donne accès aux PaaS Azure via un Private Endpoint dans le VNet. Le trafic reste sur le backbone Microsoft.</p>
+      <table>
+        <thead><tr><th>Contrôle</th><th>Couvert par Private Link</th><th>Contrôle complémentaire</th></tr></thead>
+        <tbody>
+          <tr><td>Accès public au service Search</td><td>Oui</td><td>publicNetworkAccess Disabled</td></tr>
+          <tr><td>Search ↔ Storage / Key Vault / Functions</td><td>Oui (Shared Private Link)</td><td>executionEnvironment: Private</td></tr>
+          <tr><td>SSRF vers URL arbitraire du skill</td><td>Non</td><td>Allowlist d’URL</td></tr>
+          <tr><td>Accès IMDS depuis le Skill Host</td><td>Non</td><td>NSG + blocage link-local</td></tr>
+          <tr><td>Jeton Managed Identity trop large</td><td>Non</td><td>RBAC minimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="s4">
+      <h2>4. Architecture cible</h2>
+      <pre>Clients / On-prem / VNet pairé
+        │
+        ▼
+ Private Endpoint Azure AI Search
+ publicNetworkAccess = Disabled
+ DNS : privatelink.search.windows.net
+        │
+        ▼
+ Indexer + Skillset
+ executionEnvironment = Private
+        │
+        ├── Shared Private Link → Storage / Key Vault / Functions
+        │
+        └── Custom WebApiSkill (allowlist)
+                 │
+                 ▼
+           Skill Host (VNet)
+           NSG deny-by-default
+           Block 169.254.169.254
+           Block ::ffff:169.254.169.254
+           Managed Identity least privilege</pre>
+    </section>
+
+    <section id="s5">
+      <h2>5. Checklist</h2>
+      <h3>Inbound</h3>
+      <pre>az search service update \
+  --name &lt;search-name&gt; \
+  --resource-group &lt;rg&gt; \
+  --public-network-access Disabled</pre>
+      <h3>Outbound / Skill Host</h3>
+      <ul>
+        <li>Shared Private Links approuvés.</li>
+        <li>executionEnvironment: Private.</li>
+        <li>Intégration VNet du Skill Host + NSG + allowlist + RBAC minimal.</li>
+        <li>Tests négatifs : accès public Search = échec ; URL hors allowlist = rejet.</li>
+      </ul>
+    </section>
+
+    <section id="s6">
+      <h2>6. Publication LinkedIn (version courte)</h2>
+      <p><strong>Azure AI Search : Private Link et défense en profondeur</strong></p>
+      <p>Suite à un échange avec le MSRC (cas classé « by design »), un point demeure essentiel : le design n’exclut pas les contrôles réseau.</p>
+      <p>Pour un pipeline RAG avec Custom WebApiSkill : Private Endpoint inbound ; Shared Private Links outbound ; executionEnvironment: Private ; isolation du Skill Host et blocage des adresses de métadonnées ; allowlist des URL et RBAC minimal.</p>
+      <p>Private Link réduit l’exposition. Il ne remplace pas la validation applicative ni le moindre privilège.</p>
+      <p>#Azure #AzureAISearch #PrivateLink #CyberSécurité #DefenseInDepth #MSRC</p>
+    </section>
+
+    <section id="s7">
+      <h2>7. Configuration DNS : CNAME et enregistrements A</h2>
+      <p>Le CNAME public est publié par Azure. Il ne se crée pas manuellement. L’intégration consiste à résoudre le nom privatelink vers un record <strong>A</strong> (IP privée du Private Endpoint).</p>
+      <table>
+        <thead><tr><th>Contexte</th><th>Nom</th><th>Type</th><th>Valeur</th></tr></thead>
+        <tbody>
+          <tr><td>Internet</td><td>&lt;svc&gt;.search.windows.net</td><td>CNAME</td><td>&lt;svc&gt;.privatelink.search.windows.net</td></tr>
+          <tr><td>Internet</td><td>&lt;svc&gt;.privatelink.search.windows.net</td><td>CNAME</td><td>endpoint public Microsoft</td></tr>
+          <tr><td>VNet + zone liée</td><td>&lt;svc&gt;.privatelink.search.windows.net</td><td>A</td><td>10.x.x.x (PE)</td></tr>
+        </tbody>
+      </table>
+      <pre>az network private-dns zone create --resource-group &lt;rg&gt; --name privatelink.search.windows.net
+
+az network private-dns link vnet create \
+  --resource-group &lt;rg&gt; --zone-name privatelink.search.windows.net \
+  --name link-search-vnet --virtual-network &lt;vnet&gt; --registration-enabled false
+
+az network private-dns record-set a add-record \
+  --resource-group &lt;rg&gt; --zone-name privatelink.search.windows.net \
+  --record-set-name &lt;nom-service-search&gt; --ipv4-address &lt;ip-privee-du-pe&gt;</pre>
+      <p>Conditional forwarder on-premises : domaine parent (<code>search.windows.net</code>), pas <code>privatelink.*</code>, vers 168.63.129.16 ou Private Resolver inbound.</p>
+      <pre>nslookup &lt;svc&gt;.search.windows.net
+# Dans le VNet : Nom = &lt;svc&gt;.privatelink.search.windows.net ; Address = 10.x.x.x</pre>
+    </section>
+
+    <section id="s8">
+      <h2>8. Gérer les zones DNS privées</h2>
+      <h3>Principes</h3>
+      <ul>
+        <li>Une zone par nom officiel, partagée par toutes les instances du même type de service.</li>
+        <li>Hébergement central (hub DNS), puis liens VNet vers les spokes.</li>
+        <li>Noms exacts de la matrice Microsoft.</li>
+        <li><code>registration-enabled: false</code> sur les liens Private Link.</li>
+      </ul>
+      <h3>Inventaire RAG</h3>
+      <table>
+        <thead><tr><th>Zone privée</th><th>Usage</th></tr></thead>
+        <tbody>
+          <tr><td>privatelink.search.windows.net</td><td>Inbound Search</td></tr>
+          <tr><td>privatelink.blob.core.windows.net</td><td>Sources, cache, knowledge store</td></tr>
+          <tr><td>privatelink.dfs.core.windows.net</td><td>ADLS Gen2</td></tr>
+          <tr><td>privatelink.vaultcore.azure.net</td><td>Key Vault</td></tr>
+          <tr><td>privatelink.azurewebsites.net</td><td>Function / App Service + record scm</td></tr>
+          <tr><td>privatelink.openai.azure.com</td><td>Embeddings Azure OpenAI</td></tr>
+        </tbody>
+      </table>
+      <h3>Cycle de vie</h3>
+      <ul>
+        <li><strong>Création :</strong> zone centrale, liens VNet, DNS zone group (max. 5 zones ; une seule zone par nom dans le groupe).</li>
+        <li><strong>Exploitation :</strong> laisser le zone group maintenir le record A ; éviter les A manuels en parallèle ; limiter le RBAC à Private DNS Zone Contributor.</li>
+        <li><strong>Suppression :</strong> retirer d’abord le PE ou le zone group, puis le record orphelin, puis la zone si elle n’a plus de référence.</li>
+      </ul>
+      <pre>az network private-dns zone list --query "[].{name:name,rg:resourceGroup}" -o table
+
+az network private-dns link vnet list \
+  --resource-group &lt;rg-dns&gt; \
+  --zone-name privatelink.search.windows.net -o table
+
+az network private-dns record-set a list \
+  --resource-group &lt;rg-dns&gt; \
+  --zone-name privatelink.search.windows.net -o table
+
+az network private-dns link vnet create \
+  --resource-group &lt;rg-dns&gt; \
+  --zone-name privatelink.search.windows.net \
+  --name link-&lt;spoke&gt; \
+  --virtual-network &lt;id-ou-nom-du-spoke&gt; \
+  --registration-enabled false</pre>
+      <h3>Contrôles</h3>
+      <ul>
+        <li>nslookup depuis le Skill Host : CNAME privatelink + A privée.</li>
+        <li>Portail PE → Configuration DNS : zone group Succeeded.</li>
+        <li>Éviter deux zones identiques liées au même VNet.</li>
+        <li>Policy : interdire la création de zones privatelink.* hors de la subscription réseau centrale.</li>
+      </ul>
+    </section>
+
+    <section id="s9">
+      <h2>9. Ligne de conduite publique</h2>
+      <p>Toute communication externe respecte la classification MSRC « by design ». Seules des informations déjà publiques et des recommandations de durcissement côté client sont publiées.</p>
+    </section>
+  </main>
+  <footer>
+    Document d’archivage — NetSecurePro IA — Montréal, Québec — milyes@netsecurepro.ca
+  </footer>
+</body>
+</html>
