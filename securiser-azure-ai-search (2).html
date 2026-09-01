@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sécuriser Azure AI Search | NetSecurePro IA</title>
+  <meta name="description" content="Version finale — Zero Trust, Private Link, RBAC et Custom WebApiSkill pour Azure AI Search. FR / EN / AR.">
+  <style>
+    :root { --bg:#0a0f1e; --card:#131b2e; --border:#2a3a5f; --green:#00ff88; --red:#ff4444; --orange:#ffaa00; --text:#e0e0e0; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', system-ui, sans-serif; }
+    body { background:var(--bg); color:var(--text); padding:20px; }
+    .container { max-width:1000px; margin:0 auto; }
+    .top { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px; color:#7a8aa0; font-size:.8rem; letter-spacing:.04em; }
+    .top b { color:var(--green); }
+    .lang-switch { text-align:center; margin-bottom:12px; }
+    .lang-btn { background:var(--card); border:1px solid var(--border); color:var(--text); padding:8px 16px; margin:0 5px; border-radius:6px; cursor:pointer; font-weight:bold; }
+    .lang-btn.active { background:var(--green); color:var(--bg); border-color:var(--green); }
+    header { text-align:center; padding:18px 0 24px; border-bottom:1px solid var(--border); margin-bottom:28px; }
+    header h1 { color:var(--green); font-size:2em; margin-bottom:8px; }
+    header p { color:#aaa; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; margin-bottom:24px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; }
+    .card .icon { font-size:2em; margin-bottom:10px; }
+    .card h3 { color:var(--green); margin-bottom:10px; }
+    .card p { color:#bbb; line-height:1.6; font-size:.9em; }
+    .sim-box { background:var(--card); border:2px solid var(--green); border-radius:12px; padding:25px; }
+    .sim-box h2 { color:var(--green); margin-bottom:8px; text-align:center; }
+    .progress { text-align:center; color:#8aa; font-size:.85em; margin-bottom:14px; }
+    .row { display:flex; align-items:flex-start; gap:10px; margin:8px 0; color:#ccc; font-size:.95em; }
+    .row input { margin-top:4px; accent-color:var(--green); }
+    table { width:100%; border-collapse:collapse; font-size:.88em; margin-top:8px; }
+    th, td { border-bottom:1px solid var(--border); text-align:start; padding:8px 6px; color:#bbb; }
+    th { color:var(--green); }
+    .note { margin-top:18px; color:#888; font-size:.85em; line-height:1.55; }
+    .note a { color:var(--green); }
+    footer { text-align:center; margin-top:28px; color:#666; font-size:.8em; line-height:1.5; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top">
+      <b>NETSECUREPRO IA</b>
+      <span>v1.0 finale · 01/09/2026</span>
+    </div>
+    <div class="lang-switch">
+      <button type="button" class="lang-btn active" data-lang="fr">FR</button>
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="ar">AR</button>
+    </div>
+    <header>
+      <h1 data-key="title">SÉCURISER AZURE AI SEARCH</h1>
+      <p data-key="subtitle">Zero Trust · Private Link · Défense en profondeur</p>
+    </header>
+    <div class="grid-3">
+      <div class="card">
+        <div class="icon">🔐</div>
+        <h3 data-key="c1t">Réseau</h3>
+        <p data-key="c1p">Private Endpoint entrant, Shared Private Links sortants, DNS privé, accès public désactivé après tests.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🪪</div>
+        <h3 data-key="c2t">Identité</h3>
+        <p data-key="c2p">Managed Identity, RBAC au moindre privilège, désactivation des clés API une fois le modèle Entra validé.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🛡️</div>
+        <h3 data-key="c3t">Skill et entrée</h3>
+        <p data-key="c3p">Liste blanche d’URL pour le Custom WebApiSkill, skill hébergé en privé, NSG contre les IP de métadonnées.</p>
+      </div>
+    </div>
+    <div class="sim-box">
+      <h2 data-key="check_title">Checklist opérationnelle</h2>
+      <div class="progress" id="progress">0 / 8</div>
+      <label class="row"><input type="checkbox" data-check="1"> <span data-key="s1">Identité managée activée + rôles Search minimaux</span></label>
+      <label class="row"><input type="checkbox" data-check="2"> <span data-key="s2">Clés API désactivées après validation RBAC</span></label>
+      <label class="row"><input type="checkbox" data-check="3"> <span data-key="s3">Private Endpoint + zone privatelink.search.windows.net</span></label>
+      <label class="row"><input type="checkbox" data-check="4"> <span data-key="s4">Accès réseau public désactivé</span></label>
+      <label class="row"><input type="checkbox" data-check="5"> <span data-key="s5">Shared Private Links approuvés (Storage, Key Vault, Function)</span></label>
+      <label class="row"><input type="checkbox" data-check="6"> <span data-key="s6">Indexeurs en executionEnvironment: Private</span></label>
+      <label class="row"><input type="checkbox" data-check="7"> <span data-key="s7">Liste blanche d’URL du WebApiSkill + NSG métadonnées</span></label>
+      <label class="row"><input type="checkbox" data-check="8"> <span data-key="s8">Diagnostic Settings, CMK si requis, alertes d’indexeur</span></label>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <h3 data-key="cmp_title">Private Link ou Service Endpoint</h3>
+      <table>
+        <thead>
+          <tr>
+            <th data-key="th1">Critère</th>
+            <th data-key="th2">Service Endpoint</th>
+            <th data-key="th3">Private Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td data-key="r1a">Adresse</td><td data-key="r1b">IP publique du PaaS</td><td data-key="r1c">IP privée dans le VNet</td></tr>
+          <tr><td data-key="r2a">Cible</td><td data-key="r2b">Niveau service</td><td data-key="r2c">Instance nommée</td></tr>
+          <tr><td data-key="r3a">On-premises</td><td data-key="r3b">Non natif</td><td data-key="r3c">VPN / ExpressRoute</td></tr>
+          <tr><td data-key="r4a">Coût</td><td data-key="r4b">Base gratuite</td><td data-key="r4c">Heure + Go traités</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">
+      <span data-key="note">Classification MSRC « by design » : le durcissement reste une responsabilité client. Démos de sensibilisation :</span>
+      <a href="https://netsecurepro.ca/zerotrust.html">zerotrust.html</a> ·
+      <a href="https://netsecurepro.ca/protection.html">protection.html</a> ·
+      <a href="https://netsecurepro.ca/protection2.html">protection2.html</a> ·
+      <a href="https://netsecurepro.ca/protection3.html">protection3.html</a>
+    </p>
+    <footer>
+      <span data-key="footer">© 2026 NetSecurePro IA — Montréal | Mohammed Ilyes Zoubirou · AZ-104 | SC-400</span>
+    </footer>
+  </div>
+  <script>
+    const translations = {
+      fr: {
+        title:"SÉCURISER AZURE AI SEARCH",
+        subtitle:"Zero Trust · Private Link · Défense en profondeur",
+        c1t:"Réseau",
+        c1p:"Private Endpoint entrant, Shared Private Links sortants, DNS privé, accès public désactivé après tests.",
+        c2t:"Identité",
+        c2p:"Managed Identity, RBAC au moindre privilège, désactivation des clés API une fois le modèle Entra validé.",
+        c3t:"Skill et entrée",
+        c3p:"Liste blanche d’URL pour le Custom WebApiSkill, skill hébergé en privé, NSG contre les IP de métadonnées.",
+        check_title:"Checklist opérationnelle",
+        s1:"Identité managée activée + rôles Search minimaux",
+        s2:"Clés API désactivées après validation RBAC",
+        s3:"Private Endpoint + zone privatelink.search.windows.net",
+        s4:"Accès réseau public désactivé",
+        s5:"Shared Private Links approuvés (Storage, Key Vault, Function)",
+        s6:"Indexeurs en executionEnvironment: Private",
+        s7:"Liste blanche d’URL du WebApiSkill + NSG métadonnées",
+        s8:"Diagnostic Settings, CMK si requis, alertes d’indexeur",
+        cmp_title:"Private Link ou Service Endpoint",
+        th1:"Critère", th2:"Service Endpoint", th3:"Private Link",
+        r1a:"Adresse", r1b:"IP publique du PaaS", r1c:"IP privée dans le VNet",
+        r2a:"Cible", r2b:"Niveau service", r2c:"Instance nommée",
+        r3a:"On-premises", r3b:"Non natif", r3c:"VPN / ExpressRoute",
+        r4a:"Coût", r4b:"Base gratuite", r4c:"Heure + Go traités",
+        note:"Classification MSRC « by design » : le durcissement reste une responsabilité client. Démos de sensibilisation :",
+        footer:"© 2026 NetSecurePro IA — Montréal | Mohammed Ilyes Zoubirou · AZ-104 | SC-400"
+      },
+      en: {
+        title:"SECURE AZURE AI SEARCH",
+        subtitle:"Zero Trust · Private Link · Defense in depth",
+        c1t:"Network",
+        c1p:"Inbound Private Endpoint, outbound Shared Private Links, private DNS, public access disabled after tests.",
+        c2t:"Identity",
+        c2p:"Managed Identity, least-privilege RBAC, API keys disabled once Entra roles are validated.",
+        c3t:"Skill and ingress",
+        c3p:"URL allowlist for Custom WebApiSkill, privately hosted skill, NSG blocks on metadata IPs.",
+        check_title:"Operational checklist",
+        s1:"Managed identity on + minimal Search roles",
+        s2:"API keys disabled after RBAC validation",
+        s3:"Private Endpoint + privatelink.search.windows.net zone",
+        s4:"Public network access disabled",
+        s5:"Approved Shared Private Links (Storage, Key Vault, Function)",
+        s6:"Indexers set to executionEnvironment: Private",
+        s7:"WebApiSkill URL allowlist + metadata NSG",
+        s8:"Diagnostic Settings, CMK if required, indexer alerts",
+        cmp_title:"Private Link vs Service Endpoint",
+        th1:"Criterion", th2:"Service Endpoint", th3:"Private Link",
+        r1a:"Address", r1b:"PaaS public IP", r1c:"Private IP in your VNet",
+        r2a:"Scope", r2b:"Service level", r2c:"Named instance",
+        r3a:"On-premises", r3b:"Not native", r3c:"VPN / ExpressRoute",
+        r4a:"Cost", r4b:"Basic tier free", r4c:"Hourly + processed GB",
+        note:"MSRC “by design” classification: hardening remains a customer responsibility. Awareness demos:",
+        footer:"© 2026 NetSecurePro IA — Montreal | Mohammed Ilyes Zoubirou · AZ-104 | SC-400"
+      },
+      ar: {
+        title:"تأمين Azure AI Search",
+        subtitle:"الثقة الصفرية · Private Link · الدفاع المتعمق",
+        c1t:"الشبكة",
+        c1p:"نقطة نهاية خاصة واردة، وروابط خاصة مشتركة صادرة، وDNS خاص، وتعطيل الوصول العام بعد الاختبار.",
+        c2t:"الهوية",
+        c2p:"هوية مُدارة، وصلاحيات RBAC بالحد الأدنى، وتعطيل مفاتيح API بعد اعتماد Entra.",
+        c3t:"المهارة والمدخل",
+        c3p:"قائمة بيضاء لعناوين Custom WebApiSkill، واستضافة خاصة، وNSG ضد عناوين بيانات التعريف.",
+        check_title:"قائمة تشغيل",
+        s1:"تفعيل الهوية المُدارة وأدوار Search الدنيا",
+        s2:"تعطيل مفاتيح API بعد التحقق من RBAC",
+        s3:"Private Endpoint ومنطقة privatelink.search.windows.net",
+        s4:"تعطيل الوصول الشبكي العام",
+        s5:"اعتماد Shared Private Links (Storage وKey Vault وFunction)",
+        s6:"ضبط المفهرسات على executionEnvironment: Private",
+        s7:"قائمة بيضاء لعناوين WebApiSkill وNSG للبيانات الوصفية",
+        s8:"Diagnostic Settings وCMK عند الحاجة وتنبيهات المفهرس",
+        cmp_title:"Private Link أو Service Endpoint",
+        th1:"المعيار", th2:"Service Endpoint", th3:"Private Link",
+        r1a:"العنوان", r1b:"IP عام للخدمة", r1c:"IP خاص داخل الشبكة الافتراضية",
+        r2a:"النطاق", r2b:"مستوى الخدمة", r2c:"مثيل مسمّى",
+        r3a:"المحلي", r3b:"غير أصلي", r3c:"VPN / ExpressRoute",
+        r4a:"التكلفة", r4b:"مجاني في الأساس", r4c:"بالساعة + غيغابايت معالجة",
+        note:"تصنيف MSRC « by design »: يبقى التصلب مسؤولية العميل. عروض توعوية:",
+        footer:"© 2026 NetSecurePro IA — مونتريال | Mohammed Ilyes Zoubirou · AZ-104 | SC-400"
+      }
+    };
+
+    function applyLang(lang) {
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+      document.querySelectorAll('[data-key]').forEach(el => {
+        const key = el.getAttribute('data-key');
+        if (translations[lang][key]) el.textContent = translations[lang][key];
+      });
+      try { localStorage.setItem('nsp-search-lang', lang); } catch (e) {}
+    }
+
+    function updateProgress() {
+      const boxes = [...document.querySelectorAll('input[data-check]')];
+      const done = boxes.filter(b => b.checked).length;
+      document.getElementById('progress').textContent = done + ' / ' + boxes.length;
+      const state = {};
+      boxes.forEach(b => { state[b.dataset.check] = b.checked; });
+      try { localStorage.setItem('nsp-search-check', JSON.stringify(state)); } catch (e) {}
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+    });
+    document.querySelectorAll('input[data-check]').forEach(box => {
+      box.addEventListener('change', updateProgress);
+    });
+
+    try {
+      const savedLang = localStorage.getItem('nsp-search-lang');
+      if (savedLang && translations[savedLang]) applyLang(savedLang);
+      const saved = JSON.parse(localStorage.getItem('nsp-search-check') || '{}');
+      document.querySelectorAll('input[data-check]').forEach(b => {
+        if (saved[b.dataset.check]) b.checked = true;
+      });
+    } catch (e) {}
+    updateProgress();
+  </script>
+</body>
+</html>
