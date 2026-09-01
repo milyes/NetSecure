@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NetSecurePro — Sécuriser Azure AI Search</title>
+  <style>
+    :root {
+      --bg: #070b12;
+      --panel: #0d1522;
+      --line: #1c3d3a;
+      --cyan: #2ee6c5;
+      --mint: #7cffc4;
+      --text: #d7efe8;
+      --muted: #8aa8a1;
+      --warn: #ff6b6b;
+      --gold: #f0c36d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(1200px 500px at 10% -10%, rgba(46,230,197,.08), transparent 50%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    header {
+      border-bottom: 1px solid var(--line);
+      padding: 1.1rem 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    header strong { color: var(--cyan); letter-spacing: .08em; }
+    header span { color: var(--muted); font-size: .85rem; }
+    main { max-width: 1100px; margin: 0 auto; padding: 1.4rem; }
+    h1 { font-size: 1.55rem; margin: 0 0 .4rem; }
+    .lead { color: var(--muted); margin-bottom: 1.4rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+    }
+    .card h2 { margin: 0 0 .55rem; font-size: 1rem; color: var(--mint); }
+    .card ol, .card ul { margin: 0; padding-left: 1.15rem; }
+    .card li { margin: .28rem 0; font-size: .93rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      padding: .45rem .35rem;
+      vertical-align: top;
+    }
+    th { color: var(--cyan); font-weight: 600; }
+    .note {
+      margin-top: 1.2rem;
+      padding: .85rem 1rem;
+      border-left: 3px solid var(--gold);
+      background: rgba(240,195,109,.07);
+      color: var(--muted);
+      font-size: .92rem;
+    }
+    footer {
+      margin-top: 1.6rem;
+      color: var(--muted);
+      font-size: .8rem;
+      border-top: 1px solid var(--line);
+      padding-top: .9rem;
+    }
+    a { color: var(--cyan); }
+    code { color: var(--gold); font-size: .88em; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>NETSECUREPRO IA // AZURE AI SEARCH</strong>
+    <span>Zero Trust · Private Link · Défense en profondeur</span>
+  </header>
+  <main>
+    <h1>Sécuriser Azure AI Search</h1>
+    <p class="lead">
+      Contrôles client pour un service Search utilisé dans un pipeline RAG
+      (Indexer + Custom WebApiSkill). Private Link isole le réseau.
+      Il ne remplace pas l’identité, la liste blanche d’URL ni le journal.
+    </p>
+
+    <div class="grid">
+      <article class="card">
+        <h2>1. Réseau entrant</h2>
+        <ol>
+          <li>Palier Basic ou supérieur</li>
+          <li>Private Endpoint dans un sous-réseau dédié</li>
+          <li>DNS <code>privatelink.search.windows.net</code></li>
+          <li>Désactiver l’accès public après tests</li>
+        </ol>
+      </article>
+      <article class="card">
+        <h2>2. Réseau sortant</h2>
+        <ol>
+          <li>Shared Private Links vers Storage, Key Vault, Function</li>
+          <li>Approuver les connexions cibles</li>
+          <li>Indexeur : <code>executionEnvironment: Private</code></li>
+          <li>Skillsets avancés : vérifier le SKU (souvent S2+)</li>
+        </ol>
+      </article>
+      <article class="card">
+        <h2>3. Identité</h2>
+        <ol>
+          <li>Identité managée du service Search</li>
+          <li>RBAC Entra ID au moindre privilège</li>
+          <li>Désactiver les clés API une fois le RBAC validé</li>
+          <li>Aucune attribution large (Contributor abonnement)</li>
+        </ol>
+      </article>
+      <article class="card">
+        <h2>4. Custom WebApiSkill</h2>
+        <ol>
+          <li>Liste blanche de domaines</li>
+          <li>Héberger le skill en privé</li>
+          <li>NSG : bloquer les IP de métadonnées</li>
+          <li>Journaliser les appels sortants</li>
+        </ol>
+      </article>
+    </div>
+
+    <article class="card" style="margin-top:1rem;">
+      <h2>Private Link ou Service Endpoint</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Critère</th>
+            <th>Service Endpoint</th>
+            <th>Private Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Adresse</td>
+            <td>IP publique du PaaS</td>
+            <td>IP privée dans votre VNet</td>
+          </tr>
+          <tr>
+            <td>Instance</td>
+            <td>Niveau service</td>
+            <td>Ressource nommée</td>
+          </tr>
+          <tr>
+            <td>On-premises</td>
+            <td>Non natif</td>
+            <td>VPN / ExpressRoute</td>
+          </tr>
+          <tr>
+            <td>Exfiltration</td>
+            <td>Protection moyenne</td>
+            <td>Plus forte</td>
+          </tr>
+          <tr>
+            <td>Coût</td>
+            <td>Base gratuite</td>
+            <td>Heure + Go traités</td>
+          </tr>
+        </tbody>
+      </table>
+    </article>
+
+    <article class="card" style="margin-top:1rem;">
+      <h2>Ordre recommandé</h2>
+      <ol>
+        <li>Identité managée + RBAC, puis retrait des clés API</li>
+        <li>Private Endpoint + DNS privé</li>
+        <li>Tests depuis le VNet ou le VPN</li>
+        <li>Couper l’accès public</li>
+        <li>Shared Private Links et indexeurs privés</li>
+        <li>Isolation du skill, liste blanche, NSG</li>
+        <li>CMK Key Vault si exigence de conformité</li>
+        <li>Journaux Diagnostic Settings et alertes</li>
+      </ol>
+    </article>
+
+    <p class="note">
+      Classification MSRC « by design » : le durcissement réseau et applicatif
+      reste une responsabilité client. Les démos
+      <a href="https://netsecurepro.ca/zerotrust.html">zerotrust.html</a>,
+      <a href="https://netsecurepro.ca/protection.html">protection.html</a>
+      illustrent la couche entrée / sensibilisation, pas le Private Endpoint Azure.
+    </p>
+
+    <footer>
+      NetSecurePro IA — Mohammed Ilyes Zoubirou · AZ-104 | SC-400 · page de synthèse, 1er septembre 2026
+    </footer>
+  </main>
+</body>
+</html>
