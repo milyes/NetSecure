@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSecurePro - Zero Trust Native Cockpit</title>
+    <style>
+        :root {
+            --bg-color: #06080c;
+            --panel-bg: #0d1117;
+            --card-bg: #161b22;
+            --border: #21262d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --primary: #58a6ff;
+            --success: #3fb950;
+            --warning: #d29922;
+            --danger: #f85149;
+            --purple: #bc8cff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--purple);
+            padding: 16px 20px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-group h1 {
+            font-size: 18px;
+            color: var(--primary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .title-group p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .zt-badge {
+            background: rgba(188, 140, 255, 0.1);
+            color: var(--purple);
+            border: 1px solid var(--purple);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .metric-val {
+            font-size: 24px;
+            font-weight: bold;
+            font-family: monospace;
+            color: var(--primary);
+        }
+
+        .progress-bg {
+            width: 100%;
+            height: 4px;
+            background: var(--panel-bg);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Workspace */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .panel-header {
+            font-size: 13px;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            padding: 10px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+        }
+
+        textarea {
+            height: 70px;
+            resize: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-exec { background: var(--primary); color: #000; border: none; }
+        .btn-exec:hover { background: #79c0ff; color: #000; }
+        .btn-danger { border-color: var(--danger); color: var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: #fff; }
+
+        /* Terminal Logs */
+        .terminal {
+            background: #010409;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 11px;
+            height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .log { line-height: 1.3; word-break: break-all; }
+        .log-info { color: var(--primary); }
+        .log-ok { color: var(--success); }
+        .log-warn { color: var(--warning); }
+        .log-err { color: var(--danger); }
+        .log-zt { color: var(--purple); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="title-group">
+            <h1>🛡️ NETSECUREPRO // ZERO TRUST NATIVE</h1>
+            <p>Architecture de Sécurité Déterministe Sans Dépendance Externe</p>
+        </div>
+        <div class="zt-badge">VERIFY EXPLICITLY // NEVER TRUST</div>
+    </header>
+
+    <!-- Telemetry -->
+    <div class="metrics-grid">
+        <div class="card">
+            <div class="card-title">Flux Entrants Analysés</div>
+            <div class="metric-val" id="reqCount">0</div>
+            <div class="progress-bg"><div class="progress-bar" id="reqBar"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Jetons Validés (MFA/RBAC)</div>
+            <div class="metric-val" id="authCount" style="color: var(--success);">0</div>
+            <div class="progress-bg"><div class="progress-bar" id="authBar" style="background: var(--success);"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Accès Bloqués (Zero Trust)</div>
+            <div class="metric-val" id="blockCount" style="color: var(--danger);">0</div>
+            <div class="progress-bg"><div class="progress-bar" id="blockBar" style="background: var(--danger);"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Charge Télémétrique</div>
+            <div class="metric-val" id="cpuValue">0%</div>
+            <div class="progress-bg"><div class="progress-bar" id="cpuBar" style="background: var(--warning);"></div></div>
+        </div>
+    </div>
+
+    <!-- Main Section -->
+    <div class="workspace">
+        <!-- Control Gateway -->
+        <div class="panel">
+            <div class="panel-header">Passerelle de Contrôle ZTNA</div>
+            
+            <div class="input-box">
+                <label style="font-size: 11px; color: var(--text-muted);">Niveau d'Accès Réseau (RBAC)</label>
+                <select id="userRole">
+                    <option value="ANONYMOUS">Anonyme (Non Authentifié)</option>
+                    <option value="USER">Utilisateur Standard (Lecture)</option>
+                    <option value="ADMIN">Administrateur (Privilèges Élevés)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="authToken" placeholder="Jeton d'Accès / Clé Dynamique (Ex: ZT-ADMIN-99)">
+            </div>
+
+            <div class="input-box">
+                <label style="font-size: 11px; color: var(--text-muted);">Payload de la Requête</label>
+                <textarea id="payloadInput" placeholder="Ex: READ_SYSTEM_STATUS ou EXEC_BYPASS_SHELL"></textarea>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-exec" onclick="processZTNA()">Soumettre Requête</button>
+                <button class="btn btn-danger" onclick="injectAttack()">Simuler Intrusion</button>
+            </div>
+        </div>
+
+        <!-- Terminal Log -->
+        <div class="panel">
+            <div class="panel-header">
+                <span>Journal d'Audit Déterministe</span>
+                <span onclick="clearTerminal()" style="cursor: pointer; opacity: 0.6;">Effacer</span>
+            </div>
+            <div class="terminal" id="terminal">
+                <div class="log log-zt">[ZTNA] Noyau Zero Trust initialisé. Chargement des stratégies réseau...</div>
+                <div class="log log-ok">[SECURITY] Isolation réseau active. Zéro dépendance détectée.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // System Counters & Rules
+    let totalReq = 0;
+    let totalAuth = 0;
+    let totalBlock = 0;
+
+    const strictPolicies = {
+        ADMIN_TOKEN: "ZT-ADMIN-99",
+        FORBIDDEN_PAYLOADS: [/bypass/i, /shell/i, /admin_keys/i, /drop_table/i, /<script>/i]
+    };
+
+    function addLog(msg, classType = 'info') {
+        const term = document.getElementById('terminal');
+        const entry = document.createElement('div');
+        entry.className = `log log-${classType}`;
+        const timestamp = new Date().toLocaleTimeString();
+        entry.innerText = `[${timestamp}] ${msg}`;
+        term.appendChild(entry);
+        term.scrollTop = term.scrollHeight;
+    }
+
+    // Zero Trust Engine Validation
+    function processZTNA() {
+        totalReq++;
+        const role = document.getElementById('userRole').value;
+        const token = document.getElementById('authToken').value.trim();
+        const payload = document.getElementById('payloadInput').value.trim();
+
+        addLog(`[EVALUATION] Inspecteur ZTNA engagé pour le rôle : ${role}`, 'zt');
+
+        // Rule 1: Verify Explicitly (Payload Inspection)
+        for (let pattern of strictPolicies.FORBIDDEN_PAYLOADS) {
+            if (pattern.test(payload)) {
+                totalBlock++;
+                updateDashboard();
+                addLog(`[REJET] Contenu malveillant détecté par inspection profonde.`, 'err');
+                addLog(`[POLICY] Violations des critères d'accès minimal. Blocage immédiat.`, 'err');
+                return;
+            }
+        }
+
+        // Rule 2: Least Privilege & Identity Validation
+        if (role === 'ANONYMOUS') {
+            totalBlock++;
+            updateDashboard();
+            addLog(`[REJET] Les requêtes anonymes sont strictement proscrites en Zero Trust.`, 'warn');
+            return;
+        }
+
+        if (role === 'ADMIN') {
+            if (token !== strictPolicies.ADMIN_TOKEN) {
+                totalBlock++;
+                updateDashboard();
+                addLog(`[REJET] Privilège Admin demandé mais Jeton invalide ou manquant.`, 'err');
+                return;
+            }
+        }
+
+        // Access Granted
+        totalAuth++;
+        updateDashboard();
+        addLog(`[SUCCÈS] Identité et payload validés. Autorisation temporaire accordée.`, 'ok');
+        if (payload) addLog(`[EXEC] Exécution : "${payload}"`, 'info');
+    }
+
+    function injectAttack() {
+        document.getElementById('userRole').value = 'ANONYMOUS';
+        document.getElementById('authToken').value = 'INVALID-TOKEN';
+        document.getElementById('payloadInput').value = 'EXEC_BYPASS_SHELL --force';
+        addLog(`[SIMULATION] Attaque par élévation de privilèges injectée.`, 'warn');
+    }
+
+    function updateDashboard() {
+        document.getElementById('reqCount').innerText = totalReq;
+        document.getElementById('authCount').innerText = totalAuth;
+        document.getElementById('blockCount').innerText = totalBlock;
+
+        document.getElementById('reqBar').style.width = `${Math.min(totalReq * 5, 100)}%`;
+        document.getElementById('authBar').style.width = `${totalReq ? (totalAuth / totalReq) * 100 : 0}%`;
+        document.getElementById('blockBar').style.width = `${totalReq ? (totalBlock / totalReq) * 100 : 0}%`;
+    }
+
+    function clearTerminal() {
+        document.getElementById('terminal').innerHTML = '';
+        addLog('[SYSTEM] Console d\'audit réinitialisée.', 'zt');
+    }
+
+    // Telemetry Simulation
+    setInterval(() => {
+        const cpu = Math.floor(Math.random() * 20) + 10;
+        document.getElementById('cpuValue').innerText = `${cpu}%`;
+        document.getElementById('cpuBar').style.width = `${cpu}%`;
+    }, 2000);
+</script>
+
+</body>
+</html>
