@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon IA XOR Réussie</title>
+    <style>
+        body { background-color: #121212; color: #ffffff; font-family: sans-serif; text-align: center; padding: 20px; }
+        canvas { border: 2px solid #333; background: #000; margin-top: 15px; border-radius: 8px; }
+        button { background: #00bcd4; border: none; color: black; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 16px; }
+        button:hover { background: #008c9e; }
+        #status { font-size: 18px; margin-bottom: 15px; color: #00ffcc; }
+    </style>
+</head>
+<body>
+
+    <h1>Mon Moteur IA XOR anti-blocage</h1>
+    <div id="status">IA Réinitialisée. Prête !</div>
+    
+    <button onclick="lancerApprentissage()">Lancer l'Apprentissage (XOR)</button>
+    <button onclick="reinitialiser()">Réinitialiser</button>
+    <br>
+    <canvas id="canvasXOR" width="300" height="300"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvasXOR');
+        const ctx = canvas.getContext('2d');
+        let weightsHidden, biasHidden, weightsOutput, biasOutput;
+        let epoch = 0;
+        let lr = 0.5;
+        let animationId = null;
+
+        // Les données corrigées du XOR
+        const dataset = [
+            { inputs: [0, 0], output: 0 },
+            { inputs: [1, 0], output: 1 },
+            { inputs: [0, 1], output: 1 },
+            { inputs: [1, 1], output: 0 }
+        ];
+
+        function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+        function sigmoidDerivative(x) { return x * (1 - x); }
+
+        function reinitialiser() {
+            cancelAnimationFrame(animationId);
+            epoch = 0;
+            // 3 neurones cachés pour casser la symétrie à coup sûr !
+            weightsHidden = [
+                [Math.random() * 2 - 1, Math.random() * 2 - 1],
+                [Math.random() * 2 - 1, Math.random() * 2 - 1],
+                [Math.random() * 2 - 1, Math.random() * 2 - 1]
+            ];
+            biasHidden = [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1];
+            weightsOutput = [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1];
+            biasOutput = Math.random() * 2 - 1;
+            
+            document.getElementById('status').innerText = "IA Réinitialisée. Prête !";
+            dessinerFrontiere();
+        }
+
+        function predire(x1, x2) {
+            let hiddenOutputs = [];
+            for (let i = 0; i < weightsHidden.length; i++) {
+                let act = biasHidden[i] + x1 * weightsHidden[i][0] + x2 * weightsHidden[i][1];
+                hiddenOutputs.push(sigmoid(act));
+            }
+            let outAct = biasOutput;
+            for (let i = 0; i < weightsOutput.length; i++) {
+                outAct += hiddenOutputs[i] * weightsOutput[i];
+            }
+            return { final: sigmoid(outAct), hidden: hiddenOutputs };
+        }
+
+        function entrainerUneEpoque() {
+            let totalLoss = 0;
+            dataset.forEach(data => {
+                let p = predire(data.inputs[0], data.inputs[1]);
+                let error = data.output - p.final;
+                totalLoss += Math.pow(error, 2);
+
+                let outputDelta = error * sigmoidDerivative(p.final);
+                let hiddenDeltas = [];
+                for (let i = 0; i < weightsHidden.length; i++) {
+                    hiddenDeltas.push(outputDelta * weightsOutput[i] * sigmoidDerivative(p.hidden[i]));
+                }
+
+                for (let i = 0; i < weightsOutput.length; i++) {
+                    weightsOutput[i] += lr * outputDelta * p.hidden[i];
+                }
+                biasOutput += lr * outputDelta;
+
+                for (let i = 0; i < weightsHidden.length; i++) {
+                    weightsHidden[i][0] += lr * hiddenDeltas[i] * data.inputs[0];
+                    weightsHidden[i][1] += lr * hiddenDeltas[i] * data.inputs[1];
+                    biasHidden[i] += lr * hiddenDeltas[i];
+                }
+            });
+            return totalLoss / 4;
+        }
+
+        function dessinerFrontiere() {
+            const size = canvas.width;
+            const imgData = ctx.createImageData(size, size);
+            
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    let x1 = x / size;
+                    let x2 = (size - y) / size;
+                    let p = predire(x1, x2).final;
+                    
+                    let idx = (x + y * size) * 4;
+                    // Dégradé Rouge (proche de 0) et Bleu (proche de 1)
+                    imgData.data[idx] = Math.round((1 - p) * 255); // R
+                    imgData.data[idx + 1] = 0;                    // G
+                    imgData.data[idx + 2] = Math.round(p * 255);  // B
+                    imgData.data[idx + 3] = 255;                  // Alpha
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        function boucleApprentissage() {
+            let perte = 0;
+            for(let k = 0; k < 50; k++) {
+                perte = entrainerUneEpoque();
+                epoch++;
+            }
+
+            document.getElementById('status').innerText = `Époque: ${epoch} | Perte: ${perte.toFixed(4)}`;
+            dessinerFrontiere();
+
+            if (perte > 0.005 && epoch < 20000) {
+                animationId = requestAnimationFrame(boucleApprentissage);
+            } else {
+                document.getElementById('status').innerText += " - Apprentissage terminé !";
+            }
+        }
+
+        function lancerApprentissage() {
+            cancelAnimationFrame(animationId);
+            boucleApprentissage();
+        }
+
+        reinitialiser();
+    </script>
+</body>
+</html>
